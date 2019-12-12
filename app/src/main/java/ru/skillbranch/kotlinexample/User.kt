@@ -36,17 +36,16 @@ class User private constructor(
         }
         get() = _login!!
 
-    private val salt: String by lazy {
-        ByteArray(16).also {
-            SecureRandom().nextBytes(it)
-        }.toString()
-    }
+    private var salt: String = ByteArray(16).also {
+        SecureRandom().nextBytes(it)
+    }.toString()
 
     private lateinit var passwordHash: String
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     var accessCode: String? = null
 
+    // by email
     constructor(
         firstName: String,
         lastName: String?,
@@ -57,6 +56,7 @@ class User private constructor(
         println("Secondary email constructor")
     }
 
+    // by phone
     constructor(
         firstName: String,
         lastName: String?,
@@ -67,6 +67,28 @@ class User private constructor(
         passwordHash = encrypt(code)
         accessCode = code
         sendAccessCodeToUser(rawPhone, code)
+    }
+
+    // import from csv
+    constructor(
+        firstName: String,
+        lastName: String?,
+        email: String?,
+        rawPhone: String?,
+        salt: String,
+        passwordHash: String
+    ) : this(
+        firstName = firstName,
+        lastName = lastName,
+        email = email,
+        rawPhone = rawPhone,
+        meta = mapOf("src" to "csv")
+    ) {
+        this@User.passwordHash = passwordHash
+        this@User.salt = salt
+        if (!rawPhone.isNullOrBlank()) {
+            phone = rawPhone
+        }
     }
 
     init {
@@ -146,7 +168,7 @@ class User private constructor(
             }
         }
 
-        private fun String.fullNameToPair(): Pair<String, String?> {
+        fun String.fullNameToPair(): Pair<String, String?> {
             return this.split(" ").filter { it.isNotBlank() }.run {
                 when (size) {
                     1 -> first() to null

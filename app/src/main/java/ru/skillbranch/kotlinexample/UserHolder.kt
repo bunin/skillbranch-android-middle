@@ -1,5 +1,7 @@
 package ru.skillbranch.kotlinexample
 
+import ru.skillbranch.kotlinexample.User.Factory.fullNameToPair
+
 object UserHolder {
     private val map = mutableMapOf<String, User>()
 
@@ -70,5 +72,27 @@ object UserHolder {
 
     fun reset() {
         map.clear()
+    }
+
+    fun importUsers(list: List<String>): List<User> {
+        val result: MutableList<User> = mutableListOf()
+        list.forEach {
+            val parts = it.split(";")
+            val fullName = parts[0].trim()
+            var email: String? = parts[1].trim()
+            val (salt, passwordHash) = parts[2].trim().split(":")
+            var phone: String? = parts[3]
+            val (firstName, lastName) = fullName.fullNameToPair()
+            if (email.isNullOrBlank()) {
+                email = null
+            }
+            if (phone.isNullOrBlank()) {
+                phone = null
+            }
+            val u = User(firstName, lastName, email, phone, salt, passwordHash)
+            map[u.login] = u
+            result.add(u)
+        }
+        return result
     }
 }
