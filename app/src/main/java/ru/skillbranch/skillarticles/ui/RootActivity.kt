@@ -1,6 +1,7 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.Menu
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -48,6 +49,8 @@ class RootActivity : AppCompatActivity() {
         val searchItem = menu?.findItem(R.id.action_search)
         val searchView = searchItem?.actionView as SearchView
         searchView.queryHint = "Enter text"
+        searchView.inputType = InputType.TYPE_CLASS_TEXT
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 viewModel.handleSearchQuery(query)
@@ -59,6 +62,16 @@ class RootActivity : AppCompatActivity() {
                 return true
             }
         })
+
+        searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            viewModel.handleIsSearch(hasFocus)
+        }
+
+        if (viewModel.currentState.isSearch) {
+            searchItem.expandActionView()
+            searchView.requestFocus()
+            searchView.setQuery(viewModel.currentState.searchQuery ?: "", false)
+        }
         return super.onCreateOptionsMenu(menu)
     }
 

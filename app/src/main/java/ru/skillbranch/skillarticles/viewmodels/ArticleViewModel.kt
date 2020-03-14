@@ -31,7 +31,7 @@ class ArticleViewModel(private val articleId: String) :
         subscribeOnDataSource(getArticleContent()) { content, state ->
             content ?: return@subscribeOnDataSource null
             state.copy(
-                isLoadingContent = false,
+                isLoadingContent = true,
                 content = content
             )
         }
@@ -94,7 +94,7 @@ class ArticleViewModel(private val articleId: String) :
         val msg = if (!isLiked) Notify.TextMessage("Mark is liked")
         else {
             Notify.ActionMessage(
-                "Don't like it anymore?",
+                "Don`t like it anymore",
                 "No, still like it",
                 toggleLike
             )
