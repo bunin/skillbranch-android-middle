@@ -1,9 +1,11 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
+import android.view.Menu
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
@@ -41,11 +43,30 @@ class RootActivity : AppCompatActivity() {
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.search, menu)
+        val searchItem = menu?.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as SearchView
+        searchView.queryHint = "Enter text"
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                viewModel.handleSearchQuery(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.handleSearchQuery(newText)
+                return true
+            }
+        })
+        return super.onCreateOptionsMenu(menu)
+    }
+
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val logo = if (toolbar.childCount > 2) toolbar.getChildAt(2) as ImageView else null
+        val logo = if (toolbar.childCount > 2) toolbar.getChildAt(2) as? ImageView else null
         logo?.scaleType = ImageView.ScaleType.CENTER_CROP
         // check toolbar imports
         (logo?.layoutParams as? Toolbar.LayoutParams)?.let {

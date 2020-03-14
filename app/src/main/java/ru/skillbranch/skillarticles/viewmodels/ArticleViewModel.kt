@@ -91,7 +91,7 @@ class ArticleViewModel(private val articleId: String) :
 
         toggleLike()
 
-        val msg = if (!isLiked) Notify.TextMessage("Mark as liked")
+        val msg = if (!isLiked) Notify.TextMessage("Mark is liked")
         else {
             Notify.ActionMessage(
                 "Don't like it anymore?",

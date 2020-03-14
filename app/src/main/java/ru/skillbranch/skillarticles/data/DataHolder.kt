@@ -117,3 +117,5 @@ Praesent nisl nisl, iaculis id nulla in, congue eleifend leo. Sed aliquet elemen
 
 In a turpis suscipit, venenatis arcu id, condimentum nulla. Mauris id felis id metus aliquet facilisis ut sit amet lectus. In aliquam dapibus mollis. Morbi sollicitudin purus ultricies dictum feugiat. Morbi lobortis mollis faucibus. Nunc mattis nec est sagittis semper. Curabitur in dignissim elit.
 """.trimIndent()
+
+val longTextForTests: String = """long long text content"""
