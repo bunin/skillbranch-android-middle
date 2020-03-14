@@ -50,6 +50,7 @@ class RootActivity : AppCompatActivity() {
         val searchView = searchItem?.actionView as SearchView
         searchView.queryHint = "Enter text"
         searchView.inputType = InputType.TYPE_CLASS_TEXT
+        searchView.maxWidth = 99999
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {

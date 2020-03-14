@@ -31,7 +31,7 @@ class ArticleViewModel(private val articleId: String) :
         subscribeOnDataSource(getArticleContent()) { content, state ->
             content ?: return@subscribeOnDataSource null
             state.copy(
-                isLoadingContent = true,
+                isLoadingContent = false,
                 content = content
             )
         }
