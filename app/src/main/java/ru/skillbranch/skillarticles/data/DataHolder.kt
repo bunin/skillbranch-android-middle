@@ -76,7 +76,7 @@ object NetworkDataHolder {
         GlobalScope.launch {
             if (isDelay) delay(1500)
             withContext(Dispatchers.Main) {
-                content.value = listOf(longTextForTests)
+                content.value = listOf(longText)
             }
 
         }
