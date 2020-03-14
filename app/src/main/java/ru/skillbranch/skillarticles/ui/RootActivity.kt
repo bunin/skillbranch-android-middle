@@ -1,8 +1,10 @@
 package ru.skillbranch.skillarticles.ui
 
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
-import android.text.InputType
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -35,7 +37,6 @@ class RootActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
         viewModel.observeState(this) {
             renderUi(it)
-            setupToolbar()
         }
 
         viewModel.observeNotifications(this) {
@@ -48,9 +49,32 @@ class RootActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.search, menu)
         val searchItem = menu?.findItem(R.id.action_search)
         val searchView = searchItem?.actionView as SearchView
-        searchView.queryHint = "Enter text"
-        searchView.inputType = InputType.TYPE_CLASS_TEXT
-        searchView.maxWidth = 99999
+        searchView.maxWidth = Integer.MAX_VALUE
+
+        searchView.setQuery(viewModel.currentState.searchQuery, false)
+        if (viewModel.currentState.isSearch) {
+            searchItem.expandActionView()
+            searchView.setQuery(viewModel.currentState.searchQuery, false)
+            searchView.requestFocus()
+        }
+
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+
+        searchManager.setOnCancelListener { viewModel.handleIsSearch(false) }
+        searchManager.setOnDismissListener { viewModel.handleIsSearch(false) }
+
+
+        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                viewModel.handleIsSearch(true)
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                viewModel.handleIsSearch(false)
+                return true
+            }
+        })
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -64,15 +88,6 @@ class RootActivity : AppCompatActivity() {
             }
         })
 
-        searchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
-            viewModel.handleIsSearch(hasFocus)
-        }
-
-        if (viewModel.currentState.isSearch) {
-            searchItem.expandActionView()
-            searchView.requestFocus()
-            searchView.setQuery(viewModel.currentState.searchQuery ?: "", false)
-        }
         return super.onCreateOptionsMenu(menu)
     }
 
